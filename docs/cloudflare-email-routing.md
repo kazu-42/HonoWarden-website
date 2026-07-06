@@ -47,3 +47,21 @@ Current result:
 - `email routing settings honowarden.com`: Authentication error because the OAuth token is missing `email_routing:write`.
 
 Run `npx wrangler login` again and grant Email Routing scopes, or provide a scoped Cloudflare API token with Email Routing write permission before automating the checklist.
+
+## Resume Commands After Permission Refresh
+
+After `wrangler whoami` shows `email_routing:write`, run:
+
+```sh
+npx wrangler email routing enable honowarden.com
+npx wrangler email routing addresses create ghive42@gmail.com
+```
+
+Open the verification email sent to `ghive42@gmail.com`, then create the routes:
+
+```sh
+npx wrangler email routing rules create honowarden.com --name hello --match-type literal --match-field to --match-value hello@honowarden.com --action-type forward --action-value ghive42@gmail.com
+npx wrangler email routing rules create honowarden.com --name security --match-type literal --match-field to --match-value security@honowarden.com --action-type forward --action-value ghive42@gmail.com
+npx wrangler email routing rules create honowarden.com --name admin --match-type literal --match-field to --match-value admin@honowarden.com --action-type forward --action-value ghive42@gmail.com
+npx wrangler email routing dns get honowarden.com
+```
