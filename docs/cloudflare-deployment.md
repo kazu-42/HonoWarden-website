@@ -26,8 +26,8 @@ pnpm deploy
 
 Latest verified deployment:
 
-- Version ID: `b7715d52-32e8-4625-830b-f5f50735c155`
-- Deployed at: `2026-07-06T11:53:12Z`
+- Version ID: `3db432cb-6422-4311-b558-6eb2b0b5bb51`
+- Deployed at: `2026-07-06T12:25:16Z`
 
 Authoritative Cloudflare DNS servers returned A/AAAA records for `honowarden.com` after the deploy. Local resolvers may temporarily cache the previous NXDOMAIN state.
 
@@ -50,5 +50,8 @@ Live response was verified with `curl --resolve` while local DNS propagation was
 
 ```sh
 curl --resolve honowarden.com:443:104.21.63.78 https://honowarden.com/
+curl --resolve honowarden.com:443:104.21.63.78 https://honowarden.com/favicon.ico
 curl --resolve www.honowarden.com:443:104.21.63.78 https://www.honowarden.com/
 ```
+
+The latest deployment was also verified to return the `/health` JSON response and the favicon route with `Content-Type: image/svg+xml`.
