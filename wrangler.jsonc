@@ -9,12 +9,12 @@
   },
   "routes": [
     {
-      "pattern": "honowarden.com/*",
-      "zone_name": "honowarden.com",
+      "pattern": "honowarden.com",
+      "custom_domain": true,
     },
     {
-      "pattern": "www.honowarden.com/*",
-      "zone_name": "honowarden.com",
+      "pattern": "www.honowarden.com",
+      "custom_domain": true,
     },
   ],
 }

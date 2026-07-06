@@ -27,8 +27,8 @@ pnpm deploy
 
 The Worker is configured for:
 
-- `https://honowarden.com/*`
-- `https://www.honowarden.com/*`
+- `https://honowarden.com`
+- `https://www.honowarden.com`
 - Workers preview on the account workers.dev subdomain
 
 ## Email Routing
