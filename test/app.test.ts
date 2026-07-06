@@ -12,6 +12,7 @@ describe('HonoWarden website', () => {
     expect(html).toContain('<h1>HonoWarden</h1>')
     expect(html).toContain('Cloudflare Workers')
     expect(html).toContain('API only')
+    expect(html).toContain('<link rel="icon" href="/favicon.svg"')
     expect(html).toContain('https://github.com/kazu-42/HonoWarden')
   })
 
@@ -49,6 +50,16 @@ describe('HonoWarden website', () => {
     expect(sitemap.status).toBe(200)
     expect(sitemap.headers.get('content-type')).toContain('application/xml')
     expect(await sitemap.text()).toContain('https://honowarden.com/')
+  })
+
+  it('serves favicon metadata without a browser 404', async () => {
+    const response = await app.request('/favicon.ico')
+    const svg = await response.text()
+
+    expect(response.status).toBe(200)
+    expect(response.headers.get('content-type')).toContain('image/svg+xml')
+    expect(response.headers.get('cache-control')).toContain('max-age=86400')
+    expect(svg).toContain('<svg')
   })
 
   it('renders a structured 404 page', async () => {

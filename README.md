@@ -31,14 +31,11 @@ The Worker is configured for:
 - `https://www.honowarden.com`
 - Workers preview on the account workers.dev subdomain
 
-## Email Routing
+## Cloudflare Operations
 
-Cloudflare Email Routing requires the domain to use Cloudflare authoritative nameservers and requires an API token or OAuth session with Email Routing write permissions.
+Quick links:
 
-Recommended initial aliases:
+- [Deployment state and validation](docs/cloudflare-deployment.md)
+- [Email Routing plan and permissions](docs/cloudflare-email-routing.md)
 
-- `hello@honowarden.com`
-- `security@honowarden.com`
-- `admin@honowarden.com`
-
-Do not publish these addresses until the destination mailbox is verified and routing has been tested.
+For the current operator path and known blockers (DNS propagation lag, missing Email Routing permission), see the docs above.

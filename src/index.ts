@@ -33,6 +33,20 @@ app.get('/health', (c) => {
   })
 })
 
+app.get('/favicon.svg', (c) => {
+  return c.body(faviconSvg(), 200, {
+    'Cache-Control': 'public, max-age=86400',
+    'Content-Type': 'image/svg+xml; charset=utf-8',
+  })
+})
+
+app.get('/favicon.ico', (c) => {
+  return c.body(faviconSvg(), 200, {
+    'Cache-Control': 'public, max-age=86400',
+    'Content-Type': 'image/svg+xml; charset=utf-8',
+  })
+})
+
 app.get('/robots.txt', (c) => {
   return c.text(
     [
@@ -84,6 +98,8 @@ function buildHomePage(): string {
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://honowarden.com/" />
     <meta name="theme-color" content="#0f2d2e" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="alternate icon" href="/favicon.ico" />
     <style>${styles()}</style>
   </head>
   <body>
@@ -218,6 +234,15 @@ function buildNotFoundPage(): string {
     </main>
   </body>
 </html>`
+}
+
+function faviconSvg(): string {
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <rect width="64" height="64" rx="12" fill="#0f2d2e"/>
+  <path d="M18 29h28v22H18z" fill="#fffaf0"/>
+  <path d="M23 29v-7c0-6 4-10 9-10s9 4 9 10v7h-6v-7c0-3-1-5-3-5s-3 2-3 5v7z" fill="#fffaf0"/>
+  <path d="M26 39h12v4H26z" fill="#d45b45"/>
+</svg>`
 }
 
 function styles(): string {
@@ -468,7 +493,7 @@ h2 {
 
 h1 {
   margin-bottom: 20px;
-  font-size: clamp(4rem, 15vw, 10.6rem);
+  font-size: clamp(3.5rem, 11vw, 8.2rem);
   line-height: 0.9;
 }
 

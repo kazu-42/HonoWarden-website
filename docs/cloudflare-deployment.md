@@ -34,6 +34,12 @@ Authoritative Cloudflare DNS servers returned A/AAAA records for `honowarden.com
 ## Verification
 
 ```sh
+npx wrangler whoami
+```
+
+If you are troubleshooting permissions, confirm the session is on the `gHive` account before rerunning email-routing commands.
+
+```sh
 pnpm check
 pnpm lint
 pnpm test

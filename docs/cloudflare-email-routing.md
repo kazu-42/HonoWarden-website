@@ -32,19 +32,21 @@ Domain: `honowarden.com`
 
 ## Current Automation Status
 
-The local Wrangler OAuth session can deploy Workers and manage Worker Custom Domains, but it is missing Email Routing permission.
+Status snapshot (as documented in this repo): the local Wrangler OAuth session can deploy Workers and manage Worker Custom Domains, but it is missing Email Routing permission.
 
-Observed commands:
+Observed commands and current evidence:
 
 ```sh
+npx wrangler whoami
 npx wrangler email routing list
 npx wrangler email routing settings honowarden.com
 ```
 
 Current result:
 
+- `wrangler whoami`: `email_routing:write` is not present in the session scopes.
 - `email routing list`: no zones found with Email Routing enabled.
-- `email routing settings honowarden.com`: Authentication error because the OAuth token is missing `email_routing:write`.
+- `email routing settings honowarden.com`: `Authentication error 10000` because the OAuth token is missing `email_routing:write`.
 
 Run `npx wrangler login` again and grant Email Routing scopes, or provide a scoped Cloudflare API token with Email Routing write permission before automating the checklist.
 
