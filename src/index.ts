@@ -58,6 +58,16 @@ app.get('/robots.txt', (c) => {
   )
 })
 
+app.get('/.well-known/security.txt', (c) => {
+  return c.text(securityTxt(), 200, {
+    'Cache-Control': 'public, max-age=3600',
+  })
+})
+
+app.get('/security.txt', (c) => {
+  return c.redirect('/.well-known/security.txt', 308)
+})
+
 app.get('/sitemap.xml', (c) => {
   return c.body(
     `<?xml version="1.0" encoding="UTF-8"?>
@@ -112,6 +122,7 @@ function buildHomePage(): string {
         <a href="https://github.com/kazu-42/HonoWarden">Repository</a>
         <a href="#status">Status</a>
         <a href="#scope">Scope</a>
+        <a href="#security">Security</a>
       </nav>
     </header>
     <main>
@@ -137,6 +148,7 @@ function buildHomePage(): string {
           <div class="hero-actions" aria-label="Primary actions">
             <a class="button primary" href="https://github.com/kazu-42/HonoWarden">View source</a>
             <a class="button secondary" href="#scope">Read scope</a>
+            <a class="button secondary" href="mailto:security@honowarden.com">Security contact</a>
           </div>
           <dl class="signal-list" aria-label="Project signals">
             <div>
@@ -205,10 +217,21 @@ function buildHomePage(): string {
       </section>
 
       <section class="band final-band">
-        <div class="section-inner closing">
-          <p class="section-kicker">Repository</p>
-          <h2>Open development, security-first defaults.</h2>
-          <a class="button primary" href="https://github.com/kazu-42/HonoWarden">Follow the build</a>
+        <div class="section-inner closing" id="security">
+          <div>
+            <p class="section-kicker">Security</p>
+            <h2>Open development, security-first defaults.</h2>
+            <p class="closing-copy">
+              Report vulnerabilities privately before opening public issues.
+              The project publishes a security contact and a machine-readable
+              policy file for coordinated disclosure.
+            </p>
+          </div>
+          <div class="closing-actions" aria-label="Security and project links">
+            <a class="button primary" href="mailto:security@honowarden.com">Email security</a>
+            <a class="button secondary" href="/.well-known/security.txt">security.txt</a>
+            <a class="button secondary" href="https://github.com/kazu-42/HonoWarden">Follow the build</a>
+          </div>
         </div>
       </section>
     </main>
@@ -243,6 +266,17 @@ function faviconSvg(): string {
   <path d="M23 29v-7c0-6 4-10 9-10s9 4 9 10v7h-6v-7c0-3-1-5-3-5s-3 2-3 5v7z" fill="#fffaf0"/>
   <path d="M26 39h12v4H26z" fill="#d45b45"/>
 </svg>`
+}
+
+function securityTxt(): string {
+  return [
+    'Contact: mailto:security@honowarden.com',
+    'Policy: https://github.com/kazu-42/HonoWarden/blob/main/SECURITY.md',
+    'Preferred-Languages: en, ja',
+    'Canonical: https://honowarden.com/.well-known/security.txt',
+    'Expires: 2027-07-07T00:00:00Z',
+    '',
+  ].join('\n')
 }
 
 function styles(): string {
@@ -517,7 +551,8 @@ h3 {
 }
 
 .hero-actions,
-.closing {
+.closing,
+.closing-actions {
   display: flex;
   align-items: center;
   flex-wrap: wrap;
@@ -645,10 +680,22 @@ dd {
 
 .closing {
   justify-content: space-between;
+  gap: 32px;
 }
 
 .closing h2 {
   max-width: 760px;
+}
+
+.closing-copy {
+  max-width: 680px;
+  color: rgba(255, 250, 240, 0.74);
+  line-height: 1.6;
+}
+
+.closing-actions {
+  justify-content: flex-end;
+  max-width: 540px;
 }
 
 .not-found {

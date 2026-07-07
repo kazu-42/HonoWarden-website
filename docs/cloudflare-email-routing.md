@@ -4,11 +4,16 @@ Domain: `honowarden.com`
 
 ## Intended Initial Routes
 
-| Address                   | Purpose                           | Destination         |
-| ------------------------- | --------------------------------- | ------------------- |
-| `hello@honowarden.com`    | General project contact           | `ghive42@gmail.com` |
-| `security@honowarden.com` | Coordinated vulnerability reports | `ghive42@gmail.com` |
-| `admin@honowarden.com`    | Domain and service operations     | `ghive42@gmail.com` |
+| Address                     | Purpose                           | Destination         |
+| --------------------------- | --------------------------------- | ------------------- |
+| `hello@honowarden.com`      | General project contact           | `ghive42@gmail.com` |
+| `security@honowarden.com`   | Coordinated vulnerability reports | `ghive42@gmail.com` |
+| `admin@honowarden.com`      | Domain and service operations     | `ghive42@gmail.com` |
+| `support@honowarden.com`    | Product and user support          | `ghive42@gmail.com` |
+| `postmaster@honowarden.com` | RFC and mailbox diagnostics       | `ghive42@gmail.com` |
+| `abuse@honowarden.com`      | Abuse and policy reports          | `ghive42@gmail.com` |
+
+Cloudflare Email Routing is forwarding-only. It does not provide an inbox or mailbox UI, so each alias simply forwards into an external destination mailbox (currently `ghive42@gmail.com`) that holds the actual mail.
 
 ## Required Cloudflare Permissions
 
@@ -22,7 +27,7 @@ Domain: `honowarden.com`
 2. Enable Email Routing for the zone.
 3. Add `ghive42@gmail.com` as a destination address.
 4. Open the verification email and confirm the destination.
-5. Add route rules for `hello`, `security`, and `admin`.
+5. Add route rules for `hello`, `security`, `admin`, `support`, `postmaster`, and `abuse`.
 6. Confirm Cloudflare-created MX records:
    - `isaac.mx.cloudflare.net`
    - `linda.mx.cloudflare.net`
@@ -40,6 +45,7 @@ Observed commands and current evidence:
 npx wrangler whoami
 npx wrangler email routing list
 npx wrangler email routing settings honowarden.com
+npx wrangler email routing addresses list
 ```
 
 Current result:
@@ -47,8 +53,19 @@ Current result:
 - `wrangler whoami`: `email_routing:write` is not present in the session scopes.
 - `email routing list`: no zones found with Email Routing enabled.
 - `email routing settings honowarden.com`: `Authentication error 10000` because the OAuth token is missing `email_routing:write`.
+- `email routing addresses list`: `Authentication error 10000` for the same reason, even though the account membership is Super Administrator.
 
 Run `npx wrangler login` again and grant Email Routing scopes, or provide a scoped Cloudflare API token with Email Routing write permission before automating the checklist.
+
+## Public Contact Gate
+
+Do not deploy website changes that advertise `security@honowarden.com` as an active vulnerability reporting mailbox until:
+
+1. `wrangler whoami` shows `email_routing:write`, or an equivalent scoped API token is active.
+2. Email Routing is enabled for `honowarden.com`.
+3. `ghive42@gmail.com` is verified as a destination address.
+4. The `security@honowarden.com` route exists.
+5. An inbound test message to `security@honowarden.com` is received at the destination mailbox.
 
 ## Resume Commands After Permission Refresh
 
@@ -65,5 +82,8 @@ Open the verification email sent to `ghive42@gmail.com`, then create the routes:
 npx wrangler email routing rules create honowarden.com --name hello --match-type literal --match-field to --match-value hello@honowarden.com --action-type forward --action-value ghive42@gmail.com
 npx wrangler email routing rules create honowarden.com --name security --match-type literal --match-field to --match-value security@honowarden.com --action-type forward --action-value ghive42@gmail.com
 npx wrangler email routing rules create honowarden.com --name admin --match-type literal --match-field to --match-value admin@honowarden.com --action-type forward --action-value ghive42@gmail.com
+npx wrangler email routing rules create honowarden.com --name support --match-type literal --match-field to --match-value support@honowarden.com --action-type forward --action-value ghive42@gmail.com
+npx wrangler email routing rules create honowarden.com --name postmaster --match-type literal --match-field to --match-value postmaster@honowarden.com --action-type forward --action-value ghive42@gmail.com
+npx wrangler email routing rules create honowarden.com --name abuse --match-type literal --match-field to --match-value abuse@honowarden.com --action-type forward --action-value ghive42@gmail.com
 npx wrangler email routing dns get honowarden.com
 ```

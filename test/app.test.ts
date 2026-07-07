@@ -14,6 +14,8 @@ describe('HonoWarden website', () => {
     expect(html).toContain('API only')
     expect(html).toContain('<link rel="icon" href="/favicon.svg"')
     expect(html).toContain('https://github.com/kazu-42/HonoWarden')
+    expect(html).toContain('mailto:security@honowarden.com')
+    expect(html).toContain('/.well-known/security.txt')
   })
 
   it('sets defensive browser headers', async () => {
@@ -50,6 +52,28 @@ describe('HonoWarden website', () => {
     expect(sitemap.status).toBe(200)
     expect(sitemap.headers.get('content-type')).toContain('application/xml')
     expect(await sitemap.text()).toContain('https://honowarden.com/')
+  })
+
+  it('serves coordinated disclosure metadata', async () => {
+    const response = await app.request('/.well-known/security.txt')
+    const body = await response.text()
+
+    expect(response.status).toBe(200)
+    expect(response.headers.get('cache-control')).toContain('max-age=3600')
+    expect(body).toContain('Contact: mailto:security@honowarden.com')
+    expect(body).toContain(
+      'Policy: https://github.com/kazu-42/HonoWarden/blob/main/SECURITY.md',
+    )
+    expect(body).toContain(
+      'Canonical: https://honowarden.com/.well-known/security.txt',
+    )
+  })
+
+  it('redirects the legacy security metadata path', async () => {
+    const response = await app.request('/security.txt')
+
+    expect(response.status).toBe(308)
+    expect(response.headers.get('location')).toBe('/.well-known/security.txt')
   })
 
   it('serves favicon metadata without a browser 404', async () => {
