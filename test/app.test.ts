@@ -2,6 +2,11 @@ import { describe, expect, it } from 'vitest'
 
 import app from '../src/index'
 
+const RELEASE_NOTES_URL =
+  'https://github.com/kazu-42/HonoWarden/releases/tag/v0.1.0-alpha'
+const SECURITY_POLICY_URL =
+  'https://github.com/kazu-42/HonoWarden/blob/main/SECURITY.md'
+
 describe('HonoWarden website', () => {
   it('renders the homepage', async () => {
     const response = await app.request('https://honowarden.com/')
@@ -14,8 +19,10 @@ describe('HonoWarden website', () => {
     expect(html).toContain('API only')
     expect(html).toContain('<link rel="icon" href="/favicon.svg"')
     expect(html).toContain('https://github.com/kazu-42/HonoWarden')
-    expect(html).toContain('mailto:security@honowarden.com')
-    expect(html).toContain('/.well-known/security.txt')
+    expect(html).toContain(RELEASE_NOTES_URL)
+    expect(html).toContain(SECURITY_POLICY_URL)
+    expect(html).not.toContain('mailto:security@honowarden.com')
+    expect(html).not.toContain('/.well-known/security.txt')
   })
 
   it('sets defensive browser headers', async () => {
@@ -54,26 +61,14 @@ describe('HonoWarden website', () => {
     expect(await sitemap.text()).toContain('https://honowarden.com/')
   })
 
-  it('serves coordinated disclosure metadata', async () => {
-    const response = await app.request('/.well-known/security.txt')
-    const body = await response.text()
+  it('does not serve security.txt metadata routes yet', async () => {
+    const securityTxt = await app.request('/.well-known/security.txt')
+    const legacySecurityTxt = await app.request('/security.txt')
 
-    expect(response.status).toBe(200)
-    expect(response.headers.get('cache-control')).toContain('max-age=3600')
-    expect(body).toContain('Contact: mailto:security@honowarden.com')
-    expect(body).toContain(
-      'Policy: https://github.com/kazu-42/HonoWarden/blob/main/SECURITY.md',
-    )
-    expect(body).toContain(
-      'Canonical: https://honowarden.com/.well-known/security.txt',
-    )
-  })
-
-  it('redirects the legacy security metadata path', async () => {
-    const response = await app.request('/security.txt')
-
-    expect(response.status).toBe(308)
-    expect(response.headers.get('location')).toBe('/.well-known/security.txt')
+    expect(securityTxt.status).toBe(404)
+    expect(legacySecurityTxt.status).toBe(404)
+    expect(await securityTxt.text()).toContain('Page not found')
+    expect(await legacySecurityTxt.text()).toContain('Page not found')
   })
 
   it('serves favicon metadata without a browser 404', async () => {
