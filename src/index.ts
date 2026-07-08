@@ -3,6 +3,10 @@ import { secureHeaders } from 'hono/secure-headers'
 
 const app = new Hono()
 
+const REPOSITORY_URL = 'https://github.com/kazu-42/HonoWarden'
+const RELEASE_NOTES_URL = `${REPOSITORY_URL}/releases/tag/v0.1.0-alpha`
+const SECURITY_POLICY_URL = `${REPOSITORY_URL}/blob/main/SECURITY.md`
+
 app.use(
   '*',
   secureHeaders({
@@ -58,16 +62,6 @@ app.get('/robots.txt', (c) => {
   )
 })
 
-app.get('/.well-known/security.txt', (c) => {
-  return c.text(securityTxt(), 200, {
-    'Cache-Control': 'public, max-age=3600',
-  })
-})
-
-app.get('/security.txt', (c) => {
-  return c.redirect('/.well-known/security.txt', 308)
-})
-
 app.get('/sitemap.xml', (c) => {
   return c.body(
     `<?xml version="1.0" encoding="UTF-8"?>
@@ -119,7 +113,7 @@ function buildHomePage(): string {
         <span>HonoWarden</span>
       </a>
       <nav aria-label="Project links">
-        <a href="https://github.com/kazu-42/HonoWarden">Repository</a>
+        <a href="${REPOSITORY_URL}">Repository</a>
         <a href="#status">Status</a>
         <a href="#scope">Scope</a>
         <a href="#security">Security</a>
@@ -146,9 +140,9 @@ function buildHomePage(): string {
             built with Hono, Cloudflare Workers, D1, and R2.
           </p>
           <div class="hero-actions" aria-label="Primary actions">
-            <a class="button primary" href="https://github.com/kazu-42/HonoWarden">View source</a>
+            <a class="button primary" href="${REPOSITORY_URL}">View source</a>
             <a class="button secondary" href="#scope">Read scope</a>
-            <a class="button secondary" href="mailto:security@honowarden.com">Security contact</a>
+            <a class="button secondary" href="${RELEASE_NOTES_URL}">Release notes</a>
           </div>
           <dl class="signal-list" aria-label="Project signals">
             <div>
@@ -222,15 +216,13 @@ function buildHomePage(): string {
             <p class="section-kicker">Security</p>
             <h2>Open development, security-first defaults.</h2>
             <p class="closing-copy">
-              Report vulnerabilities privately before opening public issues.
-              The project publishes a security contact and a machine-readable
-              policy file for coordinated disclosure.
+              Review the project security policy and release notes for disclosure and milestone context.
             </p>
           </div>
           <div class="closing-actions" aria-label="Security and project links">
-            <a class="button primary" href="mailto:security@honowarden.com">Email security</a>
-            <a class="button secondary" href="/.well-known/security.txt">security.txt</a>
-            <a class="button secondary" href="https://github.com/kazu-42/HonoWarden">Follow the build</a>
+            <a class="button primary" href="${SECURITY_POLICY_URL}">Security policy</a>
+            <a class="button secondary" href="${RELEASE_NOTES_URL}">Release notes</a>
+            <a class="button secondary" href="${REPOSITORY_URL}">Follow the build</a>
           </div>
         </div>
       </section>
@@ -266,17 +258,6 @@ function faviconSvg(): string {
   <path d="M23 29v-7c0-6 4-10 9-10s9 4 9 10v7h-6v-7c0-3-1-5-3-5s-3 2-3 5v7z" fill="#fffaf0"/>
   <path d="M26 39h12v4H26z" fill="#d45b45"/>
 </svg>`
-}
-
-function securityTxt(): string {
-  return [
-    'Contact: mailto:security@honowarden.com',
-    'Policy: https://github.com/kazu-42/HonoWarden/blob/main/SECURITY.md',
-    'Preferred-Languages: en, ja',
-    'Canonical: https://honowarden.com/.well-known/security.txt',
-    'Expires: 2027-07-07T00:00:00Z',
-    '',
-  ].join('\n')
 }
 
 function styles(): string {
