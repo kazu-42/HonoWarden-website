@@ -4,16 +4,16 @@ Domain: `honowarden.com`
 
 ## Intended Initial Routes
 
-| Address                     | Purpose                           | Destination         |
-| --------------------------- | --------------------------------- | ------------------- |
-| `hello@honowarden.com`      | General project contact           | `ghive42@gmail.com` |
-| `security@honowarden.com`   | Coordinated vulnerability reports | `ghive42@gmail.com` |
-| `admin@honowarden.com`      | Domain and service operations     | `ghive42@gmail.com` |
-| `support@honowarden.com`    | Product and user support          | `ghive42@gmail.com` |
-| `postmaster@honowarden.com` | RFC and mailbox diagnostics       | `ghive42@gmail.com` |
-| `abuse@honowarden.com`      | Abuse and policy reports          | `ghive42@gmail.com` |
+| Address                     | Purpose                           | Destination                         |
+| --------------------------- | --------------------------------- | ----------------------------------- |
+| `hello@honowarden.com`      | General project contact           | `<verified-forwarding-destination>` |
+| `security@honowarden.com`   | Coordinated vulnerability reports | `<verified-forwarding-destination>` |
+| `admin@honowarden.com`      | Domain and service operations     | `<verified-forwarding-destination>` |
+| `support@honowarden.com`    | Product and user support          | `<verified-forwarding-destination>` |
+| `postmaster@honowarden.com` | RFC and mailbox diagnostics       | `<verified-forwarding-destination>` |
+| `abuse@honowarden.com`      | Abuse and policy reports          | `<verified-forwarding-destination>` |
 
-Cloudflare Email Routing is forwarding-only. It does not provide an inbox or mailbox UI, so each alias simply forwards into an external destination mailbox (currently `ghive42@gmail.com`) that holds the actual mail.
+Cloudflare Email Routing is forwarding-only. It does not provide an inbox or mailbox UI, so each alias simply forwards into an external destination mailbox (currently `<verified-forwarding-destination>`) that holds the actual mail.
 
 ## Required Cloudflare Permissions
 
@@ -25,7 +25,7 @@ Cloudflare Email Routing is forwarding-only. It does not provide an inbox or mai
 
 1. Verify that `honowarden.com` is active in the gHive Cloudflare account.
 2. Enable Email Routing for the zone.
-3. Add `ghive42@gmail.com` as a destination address.
+3. Add `<verified-forwarding-destination>` as a destination address.
 4. Open the verification email and confirm the destination.
 5. Add route rules for `hello`, `security`, `admin`, `support`, `postmaster`, and `abuse`.
 6. Confirm Cloudflare-created MX records:
@@ -63,7 +63,7 @@ Do not deploy website changes that advertise `security@honowarden.com` as an act
 
 1. `wrangler whoami` shows `email_routing:write`, or an equivalent scoped API token is active.
 2. Email Routing is enabled for `honowarden.com`.
-3. `ghive42@gmail.com` is verified as a destination address.
+3. `<verified-forwarding-destination>` is verified as a destination address.
 4. The `security@honowarden.com` route exists.
 5. An inbound test message to `security@honowarden.com` is received at the destination mailbox.
 
@@ -73,17 +73,17 @@ After `wrangler whoami` shows `email_routing:write`, run:
 
 ```sh
 npx wrangler email routing enable honowarden.com
-npx wrangler email routing addresses create ghive42@gmail.com
+npx wrangler email routing addresses create <verified-forwarding-destination>
 ```
 
-Open the verification email sent to `ghive42@gmail.com`, then create the routes:
+Open the verification email sent to `<verified-forwarding-destination>`, then create the routes:
 
 ```sh
-npx wrangler email routing rules create honowarden.com --name hello --match-type literal --match-field to --match-value hello@honowarden.com --action-type forward --action-value ghive42@gmail.com
-npx wrangler email routing rules create honowarden.com --name security --match-type literal --match-field to --match-value security@honowarden.com --action-type forward --action-value ghive42@gmail.com
-npx wrangler email routing rules create honowarden.com --name admin --match-type literal --match-field to --match-value admin@honowarden.com --action-type forward --action-value ghive42@gmail.com
-npx wrangler email routing rules create honowarden.com --name support --match-type literal --match-field to --match-value support@honowarden.com --action-type forward --action-value ghive42@gmail.com
-npx wrangler email routing rules create honowarden.com --name postmaster --match-type literal --match-field to --match-value postmaster@honowarden.com --action-type forward --action-value ghive42@gmail.com
-npx wrangler email routing rules create honowarden.com --name abuse --match-type literal --match-field to --match-value abuse@honowarden.com --action-type forward --action-value ghive42@gmail.com
+npx wrangler email routing rules create honowarden.com --name hello --match-type literal --match-field to --match-value hello@honowarden.com --action-type forward --action-value <verified-forwarding-destination>
+npx wrangler email routing rules create honowarden.com --name security --match-type literal --match-field to --match-value security@honowarden.com --action-type forward --action-value <verified-forwarding-destination>
+npx wrangler email routing rules create honowarden.com --name admin --match-type literal --match-field to --match-value admin@honowarden.com --action-type forward --action-value <verified-forwarding-destination>
+npx wrangler email routing rules create honowarden.com --name support --match-type literal --match-field to --match-value support@honowarden.com --action-type forward --action-value <verified-forwarding-destination>
+npx wrangler email routing rules create honowarden.com --name postmaster --match-type literal --match-field to --match-value postmaster@honowarden.com --action-type forward --action-value <verified-forwarding-destination>
+npx wrangler email routing rules create honowarden.com --name abuse --match-type literal --match-field to --match-value abuse@honowarden.com --action-type forward --action-value <verified-forwarding-destination>
 npx wrangler email routing dns get honowarden.com
 ```
