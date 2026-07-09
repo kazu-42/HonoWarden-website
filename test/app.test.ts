@@ -6,6 +6,8 @@ const RELEASE_NOTES_URL =
   'https://github.com/kazu-42/HonoWarden/releases/tag/v0.1.0-alpha'
 const SECURITY_POLICY_URL =
   'https://github.com/kazu-42/HonoWarden/blob/main/SECURITY.md'
+const SECURITY_CONTACT = 'mailto:security@honowarden.com'
+const SECURITY_TXT_URL = 'https://honowarden.com/.well-known/security.txt'
 
 describe('HonoWarden website', () => {
   it('renders the homepage', async () => {
@@ -21,8 +23,8 @@ describe('HonoWarden website', () => {
     expect(html).toContain('https://github.com/kazu-42/HonoWarden')
     expect(html).toContain(RELEASE_NOTES_URL)
     expect(html).toContain(SECURITY_POLICY_URL)
-    expect(html).not.toContain('mailto:security@honowarden.com')
-    expect(html).not.toContain('/.well-known/security.txt')
+    expect(html).toContain(SECURITY_CONTACT)
+    expect(html).toContain('/.well-known/security.txt')
   })
 
   it('sets defensive browser headers', async () => {
@@ -61,14 +63,25 @@ describe('HonoWarden website', () => {
     expect(await sitemap.text()).toContain('https://honowarden.com/')
   })
 
-  it('does not serve security.txt metadata routes yet', async () => {
-    const securityTxt = await app.request('/.well-known/security.txt')
-    const legacySecurityTxt = await app.request('/security.txt')
+  it('serves coordinated disclosure metadata after email verification', async () => {
+    const response = await app.request('/.well-known/security.txt')
+    const body = await response.text()
 
-    expect(securityTxt.status).toBe(404)
-    expect(legacySecurityTxt.status).toBe(404)
-    expect(await securityTxt.text()).toContain('Page not found')
-    expect(await legacySecurityTxt.text()).toContain('Page not found')
+    expect(response.status).toBe(200)
+    expect(response.headers.get('content-type')).toContain('text/plain')
+    expect(response.headers.get('cache-control')).toContain('max-age=3600')
+    expect(body).toContain(`Contact: ${SECURITY_CONTACT}`)
+    expect(body).toContain(`Policy: ${SECURITY_POLICY_URL}`)
+    expect(body).toContain('Preferred-Languages: en, ja')
+    expect(body).toContain(`Canonical: ${SECURITY_TXT_URL}`)
+    expect(body).toContain('Expires: 2027-07-08T00:00:00Z')
+  })
+
+  it('redirects the legacy security metadata path', async () => {
+    const response = await app.request('/security.txt')
+
+    expect(response.status).toBe(308)
+    expect(response.headers.get('location')).toBe('/.well-known/security.txt')
   })
 
   it('serves favicon metadata without a browser 404', async () => {

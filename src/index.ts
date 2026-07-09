@@ -6,6 +6,9 @@ const app = new Hono()
 const REPOSITORY_URL = 'https://github.com/kazu-42/HonoWarden'
 const RELEASE_NOTES_URL = `${REPOSITORY_URL}/releases/tag/v0.1.0-alpha`
 const SECURITY_POLICY_URL = `${REPOSITORY_URL}/blob/main/SECURITY.md`
+const SECURITY_CONTACT_EMAIL = 'security@honowarden.com'
+const SECURITY_CONTACT_MAILTO = `mailto:${SECURITY_CONTACT_EMAIL}`
+const SECURITY_TXT_URL = 'https://honowarden.com/.well-known/security.txt'
 
 app.use(
   '*',
@@ -60,6 +63,17 @@ app.get('/robots.txt', (c) => {
       '',
     ].join('\n'),
   )
+})
+
+app.get('/.well-known/security.txt', (c) => {
+  return c.text(securityTxt(), 200, {
+    'Cache-Control': 'public, max-age=3600',
+    'Content-Type': 'text/plain; charset=utf-8',
+  })
+})
+
+app.get('/security.txt', (c) => {
+  return c.redirect('/.well-known/security.txt', 308)
 })
 
 app.get('/sitemap.xml', (c) => {
@@ -142,7 +156,7 @@ function buildHomePage(): string {
           <div class="hero-actions" aria-label="Primary actions">
             <a class="button primary" href="${REPOSITORY_URL}">View source</a>
             <a class="button secondary" href="#scope">Read scope</a>
-            <a class="button secondary" href="${RELEASE_NOTES_URL}">Release notes</a>
+            <a class="button secondary" href="${SECURITY_CONTACT_MAILTO}">Security contact</a>
           </div>
           <dl class="signal-list" aria-label="Project signals">
             <div>
@@ -216,11 +230,15 @@ function buildHomePage(): string {
             <p class="section-kicker">Security</p>
             <h2>Open development, security-first defaults.</h2>
             <p class="closing-copy">
-              Review the project security policy and release notes for disclosure and milestone context.
+              Report vulnerabilities privately before opening public issues.
+              The verified disclosure mailbox and machine-readable security
+              metadata are active for coordinated reports.
             </p>
           </div>
           <div class="closing-actions" aria-label="Security and project links">
-            <a class="button primary" href="${SECURITY_POLICY_URL}">Security policy</a>
+            <a class="button primary" href="${SECURITY_CONTACT_MAILTO}">Email security</a>
+            <a class="button secondary" href="/.well-known/security.txt">security.txt</a>
+            <a class="button secondary" href="${SECURITY_POLICY_URL}">Security policy</a>
             <a class="button secondary" href="${RELEASE_NOTES_URL}">Release notes</a>
             <a class="button secondary" href="${REPOSITORY_URL}">Follow the build</a>
           </div>
@@ -258,6 +276,17 @@ function faviconSvg(): string {
   <path d="M23 29v-7c0-6 4-10 9-10s9 4 9 10v7h-6v-7c0-3-1-5-3-5s-3 2-3 5v7z" fill="#fffaf0"/>
   <path d="M26 39h12v4H26z" fill="#d45b45"/>
 </svg>`
+}
+
+function securityTxt(): string {
+  return [
+    `Contact: ${SECURITY_CONTACT_MAILTO}`,
+    `Policy: ${SECURITY_POLICY_URL}`,
+    'Preferred-Languages: en, ja',
+    `Canonical: ${SECURITY_TXT_URL}`,
+    'Expires: 2027-07-08T00:00:00Z',
+    '',
+  ].join('\n')
 }
 
 function styles(): string {
